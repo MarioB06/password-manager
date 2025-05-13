@@ -29,9 +29,16 @@
                                 <td>{{ $password->username }}</td>
                                 <td>{{ $password->url }}</td>
                                 <td>
-                                    <x-secondary-button>Edit</x-secondary-button>
-                                    <x-danger-button>Delete</x-danger-button>
+                                    <x-secondary-button x-data
+                                        x-on:click="$dispatch('open-modal', '{{ 'edit-password-' . $password->id }}')">Edit</x-secondary-button>
+
+                                    <form method="POST" action="{{ route('passwords.destroy', $password) }}" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <x-danger-button onclick="return confirm('Are you sure?')">Delete</x-danger-button>
+                                    </form>
                                 </td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -80,4 +87,45 @@
             </div>
         </form>
     </x-modal>
+
+    @foreach ($passwords as $password)
+        <x-modal name="edit-password-{{ $password->id }}">
+            <form method="POST" action="{{ route('passwords.update', $password) }}" class="p-6">
+                @csrf
+                @method('PUT')
+
+                <h2 class="text-lg font-medium text-gray-900">Edit Password</h2>
+
+                <div class="mt-4">
+                    <x-input-label for="title-{{ $password->id }}" value="Title" />
+                    <x-text-input id="title-{{ $password->id }}" name="title" class="mt-1 block w-full"
+                        value="{{ $password->title }}" required />
+                </div>
+
+                <div class="mt-4">
+                    <x-input-label for="username-{{ $password->id }}" value="Username / Email" />
+                    <x-text-input id="username-{{ $password->id }}" name="username" class="mt-1 block w-full"
+                        value="{{ $password->username }}" required />
+                </div>
+
+                <div class="mt-4">
+                    <x-input-label for="url-{{ $password->id }}" value="Website / URL" />
+                    <x-text-input id="url-{{ $password->id }}" name="url" class="mt-1 block w-full"
+                        value="{{ $password->url }}" />
+                </div>
+
+                <div class="mt-4">
+                    <x-input-label for="password-{{ $password->id }}" value="Password" />
+                    <x-text-input id="password-{{ $password->id }}" name="password" class="mt-1 block w-full"
+                        value="{{ $password->password }}" required />
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <x-secondary-button x-on:click="$dispatch('close')">Cancel</x-secondary-button>
+                    <x-primary-button class="ml-3">Update</x-primary-button>
+                </div>
+            </form>
+        </x-modal>
+    @endforeach
+
 </x-app-layout>

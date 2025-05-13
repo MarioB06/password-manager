@@ -32,4 +32,30 @@ class PasswordController extends Controller
 
         return redirect()->route('dashboard');
     }
+
+    public function destroy(Password $password)
+    {
+        $password->delete();
+        return redirect()->route('dashboard');
+    }
+
+    public function update(Request $request, Password $password)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
+            'url' => 'nullable|string|max:255',
+            'password' => 'required|string|max:255',
+        ]);
+
+        $password->update([
+            'title' => $request->title,
+            'username' => $request->username,
+            'url' => $request->url,
+            'password' => $request->password,
+        ]);
+
+        return redirect()->route('dashboard');
+    }
+
 }
